@@ -1,6 +1,6 @@
 package com.main;
 
-import com.kamontat.convertion.Conversion;
+import com.kamontat.Conversion;
 
 import java.io.IOException;
 

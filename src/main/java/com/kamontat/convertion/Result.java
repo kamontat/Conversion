@@ -13,7 +13,7 @@ public class Result {
 	private String resultString;
 	private BufferedReader resultBuffer;
 	
-	public Result(String resultString, BufferedReader resultBuffer) {
+	Result(String resultString, BufferedReader resultBuffer) {
 		this.resultString = resultString;
 		this.resultBuffer = resultBuffer;
 	}

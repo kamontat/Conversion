@@ -20,7 +20,7 @@ public class Html2Md extends Conversion {
 	 */
 	public Remark remark;
 	
-	protected Html2Md() {
+	Html2Md() {
 		remark = new Remark();
 	}
 	
@@ -30,22 +30,18 @@ public class Html2Md extends Conversion {
 	
 	@Override
 	public Result convertString(String string) throws IOException {
-		return toResult(remark.convert(string));
+		return Result.toResult(remark.convert(string));
 	}
 	
 	@Override
 	public Result convertFile(File file) throws IOException {
-		return toResult(remark.convert(file));
+		return Result.toResult(remark.convert(file));
 	}
 	
 	@Override
 	public Result convertUrl(URL url) throws IOException {
 		Connection connection = HttpConnection.connect(url);
 		Document doc = connection.get();
-		return toResult(remark.convert(doc));
-	}
-	
-	private Result toResult(String s) {
-		return new Result(s, new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes()))));
+		return Result.toResult(remark.convert(doc));
 	}
 }

@@ -1,6 +1,8 @@
 package com.kamontat.convertion;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 
 /**
  * @author kamontat
@@ -22,5 +24,9 @@ public class Result {
 	
 	public BufferedReader toBuffer() {
 		return resultBuffer;
+	}
+	
+	public static Result toResult(String s) {
+		return new Result(s, new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes()))));
 	}
 }

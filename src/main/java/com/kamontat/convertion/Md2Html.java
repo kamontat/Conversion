@@ -20,7 +20,7 @@ public class Md2Html extends Conversion {
 	private static final String GITHUB_API = "api.github.com/";
 	private static final String MARKDOWN_CONVERTER_API = "markdown/raw";
 	
-	protected Md2Html() {
+	Md2Html() {
 	}
 	
 	private Result convert(String rawMarkdown) throws IOException {

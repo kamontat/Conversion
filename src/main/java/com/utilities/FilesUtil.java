@@ -1,20 +1,9 @@
 package com.utilities;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * FilesUtil
@@ -57,6 +46,14 @@ public class FilesUtil {
 	 * @return String text content
 	 */
 	public static String readAll(String filePathAndName, String encoding) {
+		StringBuilder stringBuilder = new StringBuilder("");
+		String line = "";
+		while (!(line = readLine(filePathAndName, 0, encoding)).equals("")) {
+			stringBuilder.append(line).append("\n");
+		}
+		return stringBuilder.toString();
+		
+		/*
 		String string = "";
 		StringBuilder stringBuilder = new StringBuilder("");
 		FileInputStream fileInputStream = null;
@@ -88,6 +85,7 @@ public class FilesUtil {
 			}
 		}
 		return string;
+		*/
 	}
 	
 	/**
@@ -95,6 +93,8 @@ public class FilesUtil {
 	 *
 	 * @param filePathAndName
 	 * 		String file name with absolute path
+	 * @param lineIndex
+	 * 		number of line to read
 	 * @param encoding
 	 * 		String file encoding
 	 * @return String text content of the line
@@ -155,6 +155,8 @@ public class FilesUtil {
 	 *
 	 * @param filePathAndName
 	 * 		String file name with absolute path
+	 * @param rowIndex
+	 * 		the row number that want to read
 	 * @return String text content of the line
 	 */
 	public static String readLine(String filePathAndName, long rowIndex) {
@@ -181,19 +183,21 @@ public class FilesUtil {
 	 * 		String file path and name
 	 * @param fileContent
 	 * 		String file content
-	 * @param flag
-	 * 		boolean flag to indicate is append, true to append, false to create
-	 * @return boolean flag to indicate create success or not
+	 * @param append
+	 * 		true to append, false to create
+	 * @return boolean append to indicate create success or not
 	 */
-	public static boolean newFile(String filePathAndName, String fileContent, boolean flag) {
+	public static boolean newFile(String filePathAndName, String fileContent, boolean append) {
 		try {
 			File file = new File(filePathAndName);
 			if (!file.exists()) {
 				file.createNewFile();
 			}
-			FileWriter fileWriter = new FileWriter(file, flag);
+			FileWriter fileWriter = new FileWriter(file, append);
 			PrintWriter printWriter = new PrintWriter(fileWriter);
 			printWriter.println(fileContent);
+			
+			printWriter.close();
 			fileWriter.close();
 			return true;
 		} catch (Exception e) {
@@ -236,6 +240,7 @@ public class FilesUtil {
 	 *
 	 * @param filePathAndName
 	 * 		String file path and name
+	 * @return true, if delete successfully
 	 */
 	public static boolean delFile(String filePathAndName) {
 		try {
@@ -253,21 +258,20 @@ public class FilesUtil {
 	 *
 	 * @param folderPath
 	 * 		String folder path
-	 * @return String created folder path
+	 * @return true, if successful create new folder; otherwise will return false.
 	 */
-	public static String newFolder(String folderPath) {
-		String filePath = folderPath;
+	public static boolean newFolder(String folderPath) {
 		try {
-			File myFilePath = new File(filePath);
+			File myFilePath = new File(folderPath);
 			if (!myFilePath.exists()) {
-				myFilePath.mkdirs();
+				return myFilePath.mkdir();
 			}
+			return false;
 		} catch (Exception e) {
 			System.out.println("create folder failed");
-			filePath = "";
 			e.printStackTrace();
+			return false;
 		}
-		return filePath;
 	}
 	
 	/**
@@ -346,35 +350,43 @@ public class FilesUtil {
 	 * copy a file
 	 *
 	 * @param srcPath
-	 * 		String the source path
+	 * 		String the source path (File)
 	 * @param dstPath
-	 * 		String the destination path
+	 * 		String the destination path (File)
+	 * @param replace
+	 * 		is dstPath exist, and this is true that file will be replaced with new content
+	 * @return true, if copy successfully
 	 */
-	public static void copyFile(String srcPath, String dstPath) {
+	public static boolean copyFile(String srcPath, String dstPath, boolean replace) {
 		InputStream inputStream = null;
 		FileOutputStream fileOutputStream = null;
 		try {
 			int byteRead;
 			File srcFile = new File(srcPath);
+			File dstFile = new File(dstPath);
+			// have but no replace
+			if (dstFile.exists() && !replace) {
+				return false;
+			}
+			// don't have, create new one
+			if (!dstFile.exists()) dstFile.createNewFile();
 			
 			if (srcFile.exists()) { // file exists
-				inputStream = new FileInputStream(srcPath); // read the source file
-				fileOutputStream = new FileOutputStream(dstPath);
+				inputStream = new FileInputStream(srcFile);
+				fileOutputStream = new FileOutputStream(dstFile);
 				byte[] buffer = new byte[1444];
 				while ((byteRead = inputStream.read(buffer)) != -1) {
 					fileOutputStream.write(buffer, 0, byteRead);
 				}
+				fileOutputStream.close();
+				inputStream.close();
+				return true;
 			}
+			return false;
 		} catch (Exception e) {
 			System.out.println("copy file failed");
 			e.printStackTrace();
-		} finally {
-			try {
-				if (fileOutputStream != null) fileOutputStream.close();
-				if (inputStream != null) inputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			return false;
 		}
 	}
 	
@@ -387,7 +399,6 @@ public class FilesUtil {
 	 * 		String the destination path
 	 */
 	public static void copyFolder(String srcPath, String dstPath) {
-		
 		try {
 			(new File(dstPath)).mkdirs(); // if the folder does not exits, create it
 			File file = new File(srcPath);
@@ -429,10 +440,12 @@ public class FilesUtil {
 	 * 		String the source path
 	 * @param dstPath
 	 * 		String the destination path
+	 * @return true, if move sucessfully
 	 */
-	public static void moveFile(String srcPath, String dstPath) {
-		copyFile(srcPath, dstPath);
-		delFile(srcPath);
+	public static boolean moveFile(String srcPath, String dstPath) {
+		boolean c = copyFile(srcPath, dstPath, true);
+		boolean d = delFile(srcPath);
+		return c && d;
 	}
 	
 	/**
@@ -449,56 +462,38 @@ public class FilesUtil {
 	}
 	
 	/**
-	 * create multi-level directory
+	 * create multi-level directory <br>
+	 * Example use: createFolders("/", "Users", "Power", "Main");
 	 *
 	 * @param folderPath
 	 * 		the path to create multi-level directory
 	 * @param paths
-	 * 		directories, split by '|'
+	 * 		(Optional) the folder that want to created.
 	 * @return String the created directory path
 	 */
-	public static String createFolders(String folderPath, String paths) {
-		String pathString;
+	public static String createFolders(String folderPath, String... paths) {
 		try {
-			String path;
-			pathString = folderPath;
-			StringTokenizer stringTokenizer = new StringTokenizer(paths, "|");
-			for (; stringTokenizer.hasMoreTokens(); ) {
-				path = stringTokenizer.nextToken();
-				if (pathString.lastIndexOf("/") != -1) {
-					pathString = newFolder(pathString + path);
-				} else {
-					pathString = newFolder(pathString + path + "/");
+			File file = new File(folderPath);
+			if (!file.exists()) file.mkdirs();
+			if (!file.isDirectory()) {
+				System.out.println("folderPath must be directory");
+				return "";
+			}
+			
+			String nextPath = folderPath;
+			for (String path : paths) {
+				if (nextPath.lastIndexOf(File.separator) == -1) {
+					nextPath += File.separator;
 				}
+				newFolder(nextPath + path);
+				nextPath = nextPath + path;
 			}
+			return nextPath;
 		} catch (Exception e) {
 			System.out.println("create multi-level directory failed");
-			pathString = "";
 			e.printStackTrace();
 		}
-		return pathString;
-	}
-	
-	/**
-	 * create multi-level directory
-	 *
-	 * @param folderPath
-	 * 		the multi-level directory to create
-	 * @return String the created directory path
-	 */
-	public static String createFolders(String folderPath) {
-		String pathString = folderPath;
-		try {
-			File file = new File(pathString);
-			if (!file.exists()) {
-				file.mkdirs();
-			}
-		} catch (Exception e) {
-			System.out.println("create multi-level directory failed");
-			pathString = "";
-			e.printStackTrace();
-		}
-		return pathString;
+		return "";
 	}
 	
 	/**
@@ -513,230 +508,66 @@ public class FilesUtil {
 	}
 	
 	/**
-	 * get all files in a folder
+	 * get all files in a folder (is isDepth is false will include folder too)
 	 *
 	 * @param path
 	 * 		String folder path
-	 * @return List<File>
+	 * @param isDepth
+	 * 		true is need to scan all subdirectories
+	 * @return List of File that content all file in the folder
 	 */
-	public static List<File> getAllFiles(String path) {
-		List<File> fileList = new ArrayList<File>();
+	public static List<File> getAllFiles(String path, boolean isDepth) {
+		List<File> fileList = new ArrayList<>();
 		File file = new File(path);
-		if (!file.exists()) {
+		File[] tempList = file.listFiles();
+		
+		if (tempList == null || !file.exists() || !file.isDirectory()) {
 			return fileList;
 		}
-		if (!file.isDirectory()) {
-			return fileList;
-		}
-		String[] tempList = file.list();
-		File tempFile;
-		for (String fileName : tempList) {
-			if (path.endsWith(File.separator)) {
-				tempFile = new File(path + fileName);
+		
+		for (File tempFile : tempList) {
+			if (isDepth) {
+				if (tempFile.isFile()) {
+					fileList.add(tempFile);
+				}
+				if (tempFile.isDirectory()) {
+					List<File> allFiles = getAllFiles(tempFile.getAbsolutePath(), true);
+					fileList.addAll(allFiles);
+				}
 			} else {
-				tempFile = new File(path + File.separator + fileName);
-			}
-			if (tempFile.isFile()) {
 				fileList.add(tempFile);
 			}
-			if (tempFile.isDirectory()) {
-				List<File> allFiles = getAllFiles(tempFile.getAbsolutePath());
-				fileList.addAll(allFiles);
-			}
 		}
 		return fileList;
 	}
 	
 	/**
-	 * get all files with specified suffix in a folder
+	 * add all files that matched with extension
 	 *
 	 * @param path
-	 * 		String folder path
-	 * @param suffix
-	 * 		String the specified suffix
-	 * @return List<File>
+	 * 		folder path
+	 * @param extension
+	 * 		file extension
+	 * @return all file matching extension
 	 */
-	public static List<File> getAllFiles(String path, String suffix) {
-		List<File> fileList = new ArrayList<File>();
-		File file = new File(path);
-		if (!file.exists()) {
-			return fileList;
-		}
-		if (!file.isDirectory()) {
-			return fileList;
-		}
-		String[] tempList = file.list();
-		File tempFile;
-		for (String fileName : tempList) {
-			if (path.endsWith(File.separator)) {
-				tempFile = new File(path + fileName);
-			} else {
-				tempFile = new File(path + File.separator + fileName);
-			}
-			if (tempFile.isFile()) {
-				if (suffix == null || "".equals(suffix)) fileList.add(tempFile);
-				else {
-					String filePath = tempFile.getAbsolutePath();
-					if (!suffix.equals("")) {
-						int beginIndex = filePath.lastIndexOf("."); // the last '.' index before suffix
-						String tempSuffix;
-						
-						if (beginIndex != -1) {
-							tempSuffix = filePath.substring(beginIndex + 1, filePath.length());
-							if (tempSuffix.equals(suffix)) {
-								fileList.add(tempFile);
-							}
-						}
-					}
-				}
-			}
-			if (tempFile.isDirectory()) {
-				List<File> allFiles = getAllFiles(tempFile.getAbsolutePath(), suffix);
-				fileList.addAll(allFiles);
-			}
-		}
-		return fileList;
+	public static List<File> getAllFiles(String path, String extension) {
+		return getAllFiles(path, true).stream().filter(file -> {
+			return extension.equals(getExtension(file.getName()));
+		}).collect(Collectors.toList());
 	}
 	
 	/**
-	 * get all names of file with specified suffix in a folder
+	 * get all names of file in the folder
 	 *
 	 * @param path
 	 * 		String folder path
-	 * @param suffix
-	 * 		String the specified suffix
 	 * @param isDepth
 	 * 		boolean is need to scan all subdirectories
-	 * @return List<String>
+	 * @return {@link List} of the {@link String}
 	 */
-	public static List<String> getAllFileNames(String path, String suffix, boolean isDepth) {
-		List<String> fileNamesList = new ArrayList<String>();
-		File file = new File(path);
-		return listFileName(fileNamesList, file, suffix, isDepth);
-	}
-	
-	private static List<String> listFileName(List<String> fileNamesList, File file, String suffix, boolean isDepth) {
-		// if is directory, scan all subdirectories by recursion
-		if (file.isDirectory()) {
-			File[] fileList = file.listFiles();
-			
-			if (fileList != null) {
-				for (File tempFile : fileList) {
-					if (isDepth || tempFile.isFile()) {
-						listFileName(fileNamesList, tempFile, suffix, isDepth);
-					}
-				}
-			}
-		} else {
-			String filePath = file.getAbsolutePath();
-			if (!suffix.equals("")) {
-				int begIndex = filePath.lastIndexOf("."); // the last '.' index before suffix
-				String tempSuffix;
-				
-				if (begIndex != -1) {
-					tempSuffix = filePath.substring(begIndex + 1, filePath.length());
-					if (tempSuffix.equals(suffix)) {
-						fileNamesList.add(filePath);
-					}
-				}
-			} else {
-				fileNamesList.add(filePath);
-			}
-		}
-		return fileNamesList;
-	}
-	
-	/**
-	 * get all file names in a folder
-	 *
-	 * @param path
-	 * 		String folder path
-	 * @return List<String>
-	 */
-	public static List<String> getAllFileNames(String path) {
-		List<String> fileNamesList = new ArrayList<String>();
-		File file = new File(path);
-		if (!file.exists()) {
-			return fileNamesList;
-		}
-		if (!file.isDirectory()) {
-			return fileNamesList;
-		}
-		String[] tempList = file.list();
-		File tempFile;
-		for (String fileName : tempList) {
-			if (path.endsWith(File.separator)) {
-				tempFile = new File(path + fileName);
-			} else {
-				tempFile = new File(path + File.separator + fileName);
-			}
-			if (tempFile.isFile()) {
-				fileNamesList.add(tempFile.getName());
-			}
-		}
-		return fileNamesList;
-	}
-	
-	/**
-	 * get all file names in a folder
-	 *
-	 * @param path
-	 * 		String folder path
-	 * @return Map<String, String>
-	 */
-	public static Map<String, String> getAllFileNamesByMap(String path) {
-		Map<String, String> fileNamesMap = new HashMap<String, String>();
-		File file = new File(path);
-		if (!file.exists()) {
-			return fileNamesMap;
-		}
-		if (!file.isDirectory()) {
-			return fileNamesMap;
-		}
-		String[] tempList = file.list();
-		File tempFile;
-		for (String fileName : tempList) {
-			if (path.endsWith(File.separator)) {
-				tempFile = new File(path + fileName);
-			} else {
-				tempFile = new File(path + File.separator + fileName);
-			}
-			if (tempFile.isFile()) {
-				fileNamesMap.put(tempFile.getName(), tempFile.getName());
-			}
-		}
-		return fileNamesMap;
-	}
-	
-	/**
-	 * get all file names in a folder
-	 *
-	 * @param path
-	 * 		String folder path
-	 * @return String[]
-	 */
-	public static String[] getAllFileNamesByPath(String path) {
-		File file = new File(path);
-		if (!file.exists()) {
-			return null;
-		}
-		if (!file.isDirectory()) {
-			return null;
-		}
-		String[] tempList = file.list();
-		List<String> fileList = new ArrayList<String>();
-		File tempFile;
-		for (String fileName : tempList) {
-			if (path.endsWith(File.separator)) {
-				tempFile = new File(path + fileName);
-			} else {
-				tempFile = new File(path + File.separator + fileName);
-			}
-			if (tempFile.isFile()) {
-				fileList.add(tempFile.getName());
-			}
-		}
-		return fileList.toArray(new String[fileList.size()]);
+	public static List<String> getAllFileNames(String path, boolean isDepth) {
+		List<File> fileList = getAllFiles(path, isDepth);
+		return fileList.stream().map(File::getName).collect(Collectors.toList());
 	}
 	
 	/**
@@ -747,23 +578,20 @@ public class FilesUtil {
 	 * @return String file name without suffix
 	 */
 	public static String getNameNoSuffix(String fileName) {
-		if (fileName.lastIndexOf(".") >= 0) return fileName.substring(0, fileName.lastIndexOf("."));
-		else return fileName;
+		return fileName.replace("." + getExtension(fileName), "");
 	}
 	
 	/**
-	 * return file name with suffix
+	 * get file extension/suffix (without dot) <br>
+	 * Example: html, txt, pdf, etc.
 	 *
 	 * @param fileName
-	 * 		file path and name
-	 * @return String file name with suffix
+	 * 		file name
+	 * @return extension/suffix of file
 	 */
-	public static String getFileName(String fileName) {
-		String shortFileName = fileName;
-		shortFileName = shortFileName.replace("\\", "/");
-		if (shortFileName.contains("/"))
-			shortFileName = shortFileName.substring(shortFileName.lastIndexOf("/") + 1, shortFileName.length());
-		return shortFileName;
+	public static String getExtension(String fileName) {
+		String[] name = fileName.split(".");
+		return name[name.length - 1];
 	}
 	
 	/**
@@ -777,7 +605,7 @@ public class FilesUtil {
 		File file = new File(path);
 		if (!file.exists()) {
 			boolean isSuccess = file.mkdir();
-			if (!isSuccess) createFolders(path);
+			if (!isSuccess) isSuccess = !createFolders(path).equals("");
 			return isSuccess;
 		} else {
 			return true;
@@ -792,107 +620,44 @@ public class FilesUtil {
 	 * @return boolean
 	 */
 	public static boolean isExistNotCreate(String path) {
-		File file = new File(path);
-		return file.exists();
+		return new File(path).exists();
 	}
 	
 	/**
-	 * copy a file
+	 * copy a file from srcPath to dstPath
 	 *
 	 * @param fileName
-	 * 		file name
+	 * 		file name (File)
 	 * @param srcPath
-	 * 		source path
+	 * 		source path (Folder)
 	 * @param dstPath
-	 * 		destination path
-	 * @return boolean
+	 * 		destination path (Folder)
+	 * @return true, if copy successfully; otherwise return false
 	 */
 	public boolean copyTheFile(String fileName, String srcPath, String dstPath) {
-		boolean isSucceed = false;
-		
-		InputStream inputStream = null;
-		FileOutputStream fileOutputStream = null;
-		try {
-			int byteRead;
-			File srcFile = new File(srcPath + "/" + fileName);
-			File dstFile = new File(dstPath);
-			if (!dstFile.exists()) {
-				dstFile.mkdirs();
-			}
-			if (!srcFile.exists()) {
-				throw new Exception("the file to copy do not exist");
-			}
-			if (srcFile.exists()) {
-				inputStream = new FileInputStream(srcPath + "/" + fileName);
-				fileOutputStream = new FileOutputStream(dstPath + "/" + fileName);
-				byte[] buffer = new byte[1444];
-				while ((byteRead = inputStream.read(buffer)) != -1) {
-					fileOutputStream.write(buffer, 0, byteRead);
-				}
-			}
-			isSucceed = true;
-		} catch (Exception e) {
-			System.out.println("copy file failed");
-			e.printStackTrace();
-		} finally {
-			try {
-				if (fileOutputStream != null) fileOutputStream.close();
-				if (inputStream != null) inputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		File dstFile = new File(dstPath);
+		if (!dstFile.exists()) {
+			createFolders(dstPath);
 		}
-		return isSucceed;
+		return copyFile(srcPath + File.separator + fileName, dstPath + File.separator + fileName, false);
 	}
 	
 	/**
 	 * move a file
 	 *
 	 * @param fileName
-	 * 		file name
+	 * 		file name (File)
 	 * @param srcPath
-	 * 		source path
+	 * 		source path (Folder)
 	 * @param dstPath
-	 * 		destination path
-	 * @return boolean
+	 * 		destination path (Folder)
+	 * @return true, if copy successfully; otherwise return false
 	 */
 	public boolean moveTheFile(String fileName, String srcPath, String dstPath) {
-		boolean isSucceed = false;
-		
-		InputStream inputStream = null;
-		FileOutputStream fileOutputStream = null;
-		try {
-			int byteRead;
-			File srcFile = new File(srcPath + "/" + fileName);
-			File dstFile = new File(dstPath);
-			if (!dstFile.exists()) {
-				dstFile.mkdirs();
-			}
-			if (!srcFile.exists()) {
-				throw new Exception("the file to move do not exist");
-			}
-			if (srcFile.exists()) {
-				inputStream = new FileInputStream(srcPath + "/" + fileName);
-				fileOutputStream = new FileOutputStream(dstPath + "/" + fileName);
-				byte[] buffer = new byte[1444];
-				while ((byteRead = inputStream.read(buffer)) != -1) {
-					fileOutputStream.write(buffer, 0, byteRead);
-				}
-			}
-			isSucceed = true;
-		} catch (Exception e) {
-			System.out.println("move file failed");
-			e.printStackTrace();
-		} finally {
-			try {
-				if (fileOutputStream != null) fileOutputStream.close();
-				if (inputStream != null) inputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			File deleteFile = new File(srcPath + "/" + fileName);
-			if (isSucceed) isSucceed = deleteFile.delete();
+		File dstFile = new File(dstPath);
+		if (!dstFile.exists()) {
+			createFolders(dstPath);
 		}
-		return isSucceed;
+		return moveFile(srcPath + File.separator + fileName, dstPath + File.separator + fileName);
 	}
 }

@@ -14,7 +14,7 @@ import java.net.URL;
  * @version 1.0
  * @since Mon 13/Mar/2017 - 11:15 PM
  */
-public class Html2Md extends Conversion {
+public class Html2Md extends Converter {
 	/**
 	 * for advanced user.
 	 */
@@ -29,17 +29,17 @@ public class Html2Md extends Conversion {
 	}
 	
 	@Override
-	public Result convertString(String string) throws IOException {
+	public Result convert(String string) throws IOException {
 		return Result.toResult(remark.convert(string));
 	}
 	
 	@Override
-	public Result convertFile(File file) throws IOException {
+	public Result convert(File file) throws IOException {
 		return Result.toResult(remark.convert(file));
 	}
 	
 	@Override
-	public Result convertUrl(URL url) throws IOException {
+	public Result convert(URL url) throws IOException {
 		Connection connection = HttpConnection.connect(url);
 		Document doc = connection.get();
 		return Result.toResult(remark.convert(doc));

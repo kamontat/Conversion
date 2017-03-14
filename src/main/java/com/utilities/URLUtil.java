@@ -39,7 +39,7 @@ public class URLUtil {
 		link = (protocol == Protocol.HTTP ? "http://": "https://") + link;
 		
 		try {
-			url = new URL(link.toLowerCase(Locale.ENGLISH));
+			url = new URL(link);
 		} catch (MalformedURLException e) {
 			throw new IOException(e.getMessage(), e.getCause());
 		}
@@ -60,7 +60,7 @@ public class URLUtil {
 	
 	
 	public static URLUtil getUrl(Protocol protocol, String link) throws IOException {
-		return new URLUtil(protocol, link.toLowerCase(Locale.ENGLISH));
+		return new URLUtil(protocol, link);
 	}
 	
 	public static URLUtil getUrl(URL url) {

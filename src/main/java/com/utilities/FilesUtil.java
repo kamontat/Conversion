@@ -1,7 +1,7 @@
 package com.utilities;
 
 import java.io.*;
-import java.net.URLDecoder;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,6 +13,19 @@ import java.util.stream.Collectors;
  * @author add more by kamontat chantrachirathumrong
  */
 public class FilesUtil {
+	public static String DEFAULT_ENCODING = "UTF-8";
+	
+	/**
+	 * get path start with <code>current project path</code>
+	 *
+	 * @param more
+	 * 		addition string to be joined to start path
+	 * @return {@link File}
+	 * @see Paths#get(String, String...)
+	 */
+	public static File getFile(String... more) {
+		return Paths.get(".", more).toAbsolutePath().normalize().toFile();
+	}
 	
 	/**
 	 * read all context in file {@link File}
@@ -22,7 +35,7 @@ public class FilesUtil {
 	 * @return String text content
 	 */
 	public static String readAll(File file) {
-		return readAll(file.getAbsolutePath(), "UTF-8");
+		return readAll(file.getAbsolutePath(), DEFAULT_ENCODING);
 	}
 	
 	/**
@@ -33,7 +46,7 @@ public class FilesUtil {
 	 * @return String text content
 	 */
 	public static String readAll(String filePathAndName) {
-		return readAll(filePathAndName, "UTF-8");
+		return readAll(filePathAndName, DEFAULT_ENCODING);
 	}
 	
 	/**
@@ -46,108 +59,37 @@ public class FilesUtil {
 	 * @return String text content
 	 */
 	public static String readAll(String filePathAndName, String encoding) {
-		StringBuilder stringBuilder = new StringBuilder("");
-		String line = "";
-		while (!(line = readLine(filePathAndName, 0, encoding)).equals("")) {
-			stringBuilder.append(line).append("\n");
-		}
-		return stringBuilder.toString();
-		
-		/*
-		String string = "";
-		StringBuilder stringBuilder = new StringBuilder("");
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(URLDecoder.decode(filePathAndName, encoding));
-			InputStreamReader inputStreamReader;
-			if ("".equals(encoding)) {
-				inputStreamReader = new InputStreamReader(fileInputStream);
-			} else {
-				inputStreamReader = new InputStreamReader(fileInputStream, encoding);
-			}
-			try {
-				String data;
-				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-				while ((data = bufferedReader.readLine()) != null) {
-					stringBuilder.append(data).append("\n");
-				}
-			} catch (Exception e) {
-				return "";
-			}
-			string = stringBuilder.toString();
-		} catch (IOException es) {
-			string = "";
-		} finally {
-			try {
-				if (fileInputStream != null) fileInputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return string;
-		*/
+		return readLine(filePathAndName, encoding).stream().reduce((s, s2) -> s.concat("\n").concat(s2)).orElse("");
 	}
 	
 	/**
-	 * read the specified line content of text file
+	 * read the line content of text file, in array <br>
+	 * <b>PS.</b> size of element = number of line
 	 *
 	 * @param filePathAndName
 	 * 		String file name with absolute path
-	 * @param lineIndex
-	 * 		number of line to read
 	 * @param encoding
 	 * 		String file encoding
-	 * @return String text content of the line
+	 * @return Array of string content separate by "\n" (new line)
 	 */
-	public static String readLine(String filePathAndName, long lineIndex, String encoding) {
+	public static List<String> readLine(String filePathAndName, String encoding) {
+		if (encoding == null) encoding = DEFAULT_ENCODING;
 		String string = "";
-		StringBuilder stringBuilder = new StringBuilder("");
+		List<String> stringList = new ArrayList<>();
 		long i = 0;
-		FileInputStream fileInputStream = null;
+		
+		BufferedReader reader = getBuffer(filePathAndName, encoding);
+		if (reader == null) return stringList;
+		
 		try {
-			fileInputStream = new FileInputStream(URLDecoder.decode(filePathAndName, encoding));
-			InputStreamReader inputStreamReader;
-			if ("".equals(encoding)) {
-				inputStreamReader = new InputStreamReader(fileInputStream);
-			} else {
-				inputStreamReader = new InputStreamReader(fileInputStream, encoding);
+			String data;
+			while ((data = reader.readLine()) != null) {
+				stringList.add(data);
 			}
-			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-			try {
-				String data;
-				while ((data = bufferedReader.readLine()) != null) {
-					if (lineIndex == i) {
-						stringBuilder.append(data);
-						break;
-					} else {
-						i++;
-					}
-				}
-			} catch (Exception e) {
-				return "";
-			}
-			string = stringBuilder.toString();
-		} catch (IOException es) {
-			return "";
-		} finally {
-			try {
-				if (fileInputStream != null) fileInputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			return stringList;
+		} catch (Exception e) {
+			return stringList;
 		}
-		return string;
-	}
-	
-	/**
-	 * read the first line content of text file
-	 *
-	 * @param filePathAndName
-	 * 		String file name with absolute path
-	 * @return String text content of the first line
-	 */
-	public static String readLine(String filePathAndName) {
-		return readLine(filePathAndName, 0, "UTF-8");
 	}
 	
 	/**
@@ -160,7 +102,7 @@ public class FilesUtil {
 	 * @return String text content of the line
 	 */
 	public static String readLine(String filePathAndName, long rowIndex) {
-		return readLine(filePathAndName, rowIndex, "UTF-8");
+		return readLine(filePathAndName, DEFAULT_ENCODING).get(Math.toIntExact(rowIndex));
 	}
 	
 	/**
@@ -551,9 +493,7 @@ public class FilesUtil {
 	 * @return all file matching extension
 	 */
 	public static List<File> getAllFiles(String path, String extension) {
-		return getAllFiles(path, true).stream().filter(file -> {
-			return extension.equals(getExtension(file.getName()));
-		}).collect(Collectors.toList());
+		return getAllFiles(path, true).stream().filter(file -> extension.equals(getExtension(file.getName()))).collect(Collectors.toList());
 	}
 	
 	/**
@@ -590,7 +530,8 @@ public class FilesUtil {
 	 * @return extension/suffix of file
 	 */
 	public static String getExtension(String fileName) {
-		String[] name = fileName.split(".");
+		String[] name = fileName.split("\\.");
+		if (name.length < 2) return "";
 		return name[name.length - 1];
 	}
 	
@@ -659,5 +600,23 @@ public class FilesUtil {
 			createFolders(dstPath);
 		}
 		return moveFile(srcPath + File.separator + fileName, dstPath + File.separator + fileName);
+	}
+	
+	/**
+	 * convert string of file path to bufferReader
+	 *
+	 * @param fileAndPath
+	 * 		String file name with absolute path
+	 * @param encoding
+	 * 		(optional) can be null, Default -> {@link #DEFAULT_ENCODING}
+	 * @return bufferReader of file
+	 */
+	private static BufferedReader getBuffer(String fileAndPath, String encoding) {
+		if (encoding == null || encoding.equals("")) encoding = DEFAULT_ENCODING;
+		try {
+			return new BufferedReader(new InputStreamReader(new FileInputStream(fileAndPath), encoding));
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			return null;
+		}
 	}
 }

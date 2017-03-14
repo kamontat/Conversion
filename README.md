@@ -1,7 +1,7 @@
-# Just Download it, in Release tab.
+### Just Download it, in Release tab.
 
-# The example will be in `src/main/java/com/example` path.
+### The example will be in `src/main/java/com/example` path.
 
-# License (MIT)
+### License (MIT)
 
-# Thank you for reading
+### Thank you for reading

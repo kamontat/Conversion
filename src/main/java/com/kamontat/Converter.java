@@ -1,7 +1,8 @@
 package com.kamontat;
 
+import com.exception.ConversionException;
+
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -27,9 +28,9 @@ public abstract class Converter {
 		return tClass.cast(this);
 	}
 	
-	public abstract Result convert(String string) throws IOException;
+	public abstract Result convert(String string) throws ConversionException;
 	
-	public abstract Result convert(File file) throws IOException;
+	public abstract Result convert(File file) throws ConversionException;
 	
-	public abstract Result convert(URL url) throws IOException;
+	public abstract Result convert(URL url) throws ConversionException;
 }

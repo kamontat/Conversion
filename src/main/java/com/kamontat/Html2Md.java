@@ -1,5 +1,6 @@
 package com.kamontat;
 
+import com.exception.ConversionException;
 import com.overzealous.remark.Options;
 import com.overzealous.remark.Remark;
 import com.utilities.FilesUtil;
@@ -30,21 +31,30 @@ public class Html2Md extends Converter {
 	}
 	
 	@Override
-	public Result convert(String string) throws IOException {
+	public Result convert(String string) throws ConversionException {
 		return Result.toResult(remark.convert(string));
 	}
 	
 	@Override
-	public Result convert(File file) throws IOException {
+	public Result convert(File file) throws ConversionException {
 		String s = FilesUtil.getExtension(file.getName());
 		if (s.contains("html")) return convert(FilesUtil.readAll(file));
-		return Result.toResult(remark.convert(file));
+		try {
+			return Result.toResult(remark.convert(file));
+		} catch (IOException e) {
+			throw new ConversionException("I/O occurred", e);
+		}
 	}
 	
 	@Override
-	public Result convert(URL url) throws IOException {
+	public Result convert(URL url) throws ConversionException {
 		Connection connection = HttpConnection.connect(url);
-		Document doc = connection.get();
+		Document doc = null;
+		try {
+			doc = connection.get();
+		} catch (IOException e) {
+			throw new ConversionException("Getting Data Fail.", e);
+		}
 		return Result.toResult(remark.convert(doc));
 	}
 }

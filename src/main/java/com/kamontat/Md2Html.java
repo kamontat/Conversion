@@ -38,7 +38,9 @@ public class Md2Html extends Converter {
 	@Override
 	public Result convert(File file) throws IOException {
 		if (file == null) throw new IOException("no file");
-		return convert(FilesUtil.readAll(file));
+		String s = FilesUtil.getExtension(file.getName());
+		if (s.contains("md")) return convert(FilesUtil.readAll(file));
+		else throw new IOException("File extension unacceptable");
 	}
 	
 	@Override

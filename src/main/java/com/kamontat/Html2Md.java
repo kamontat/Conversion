@@ -2,6 +2,7 @@ package com.kamontat;
 
 import com.overzealous.remark.Options;
 import com.overzealous.remark.Remark;
+import com.utilities.FilesUtil;
 import org.jsoup.Connection;
 import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
@@ -35,6 +36,8 @@ public class Html2Md extends Converter {
 	
 	@Override
 	public Result convert(File file) throws IOException {
+		String s = FilesUtil.getExtension(file.getName());
+		if (s.contains("html")) return convert(FilesUtil.readAll(file));
 		return Result.toResult(remark.convert(file));
 	}
 	

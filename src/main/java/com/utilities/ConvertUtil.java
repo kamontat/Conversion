@@ -7,11 +7,23 @@ import java.io.IOException;
 import java.util.*;
 
 /**
+ * Conversion utility (between HTML and MD)
+ *
  * @author kamontat
  * @version 1.0
  * @since Mon 13/Mar/2017 - 10:26 PM
  */
 public class ConvertUtil {
+	/**
+	 * change html to md in <code>Jekyll</code> format
+	 *
+	 * @param htmlPath
+	 * 		(Folder/File) html path file
+	 * @param mdPath
+	 * 		(Folder/File) markdown path file
+	 * @param charset
+	 * 		you can assign as {@link FilesUtil#DEFAULT_ENCODING}
+	 */
 	public static void htmlToJekyllMd(String htmlPath, String mdPath, String charset) {
 		try {
 			List<File> fileList = FilesUtil.getAllFiles(htmlPath, "html");
@@ -33,6 +45,16 @@ public class ConvertUtil {
 		}
 	}
 	
+	/**
+	 * change html to md in <code>Hexo</code> format
+	 *
+	 * @param htmlPath
+	 * 		(Folder/File) html path file
+	 * @param mdPath
+	 * 		(Folder/File) markdown path file
+	 * @param charset
+	 * 		you can assign as {@link FilesUtil#DEFAULT_ENCODING}
+	 */
 	public static void htmlToHexoMd(String htmlPath, String mdPath, String charset) {
 		try {
 			List<File> fileList = FilesUtil.getAllFiles(htmlPath, "html");

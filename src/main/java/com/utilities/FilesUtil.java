@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * FilesUtil
+ * Files Utility
  *
  * @author robin
  * @author refactor by Sevan Joe

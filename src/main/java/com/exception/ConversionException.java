@@ -3,6 +3,8 @@ package com.exception;
 import java.io.IOException;
 
 /**
+ * To handle error that occurred when try to convert html and markdown
+ *
  * @author kamontat
  * @version 1.0
  * @since Thu 09/Mar/2017 - 10:17 PM

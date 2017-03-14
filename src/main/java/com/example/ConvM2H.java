@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
+ * HTML to Markdown
+ *
  * @author kamontat
  * @version 1.0
  * @since Tue 14/Mar/2017 - 12:30 PM

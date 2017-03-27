@@ -1,6 +1,7 @@
 package com.utilities;
 
-import com.kamontat.Converter;
+import com.kamontat.convert.Converter;
+import com.kamontat.utilities.FilesUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +33,6 @@ public class ConvertUtil {
 				String hmPath = mdName.substring(0, mdName.lastIndexOf("/")) + "/";
 				String separator = System.getProperty("line.separator");
 				String head = "---" + separator + "layout: post" + separator + "title: \"" + file.getName() + "\"" + separator + "description: \"" + file.getName() + "\"" + separator + "category: pages\"" + separator + "tags: [blog]\"" + separator + "--- " + separator + "{% include JB/setup %}" + separator + separator;
-				FilesUtil.isExist(hmPath);
 				String parsedText = Converter.by(Converter.Type.HTML2MD).convert(file).toString();
 				Calendar calendar = Calendar.getInstance();
 				String dateName = DateUtil.dateToShortString(calendar.getTime());
@@ -77,7 +77,6 @@ public class ConvertUtil {
 				}
 				categories.append(strings[0]);
 				String head = "---" + separator + "layout: post" + separator + "title: \"" + file.getName().replace(".html", "").split("-")[0] + "\"" + separator + "date: " + dateString + separator + "categories: " + categories + separator + "tags: " + separator + blog.toString() + "--- " + separator + separator;
-				FilesUtil.isExist(hmPath);
 				String parsedText = Converter.by(Converter.Type.HTML2MD).convert(file).toString();
 				String newName = dateName + "-" + hmPath.replace(mdPath, "").replace("/", "-") + "-" + file.getName();
 				String mmName = (hmPath + newName.replace("html", "md")).replaceAll("\\s*", "");

@@ -1,9 +1,10 @@
 package com.example;
 
-import com.kamontat.Converter;
-import com.kamontat.Result;
-import com.utilities.FilesUtil;
-import com.utilities.URLUtil;
+import com.kamontat.convert.Converter;
+import com.kamontat.convert.Result;
+import com.kamontat.constance.Protocol;
+import com.kamontat.utilities.FilesUtil;
+import com.kamontat.utilities.URLManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,14 +23,16 @@ public class ConvM2H {
 	
 	public static void main(String[] args) throws IOException {
 		// file
-		File f = FilesUtil.getFile("src", "resource", "test_file.md");
+		File f = FilesUtil.getFileFromRoot("src", "resource", "test_file.md");
 		// url
-		URL url = URLUtil.getUrl(URLUtil.Protocol.HTTPS, "raw.githubusercontent.com/kamontat/CheckIDNumber/master/Readme.md").getUrl();
+		URL url = URLManager.getUrl(Protocol.HTTPS, "raw.githubusercontent.com/kamontat/CheckIDNumber/master/Readme.md").getUrl();
 		// string
 		String md = "Error `Exception...` will appear when you **don't** install *JRE*";
 		
 		String s = c.convert(f).toString();
 		InputStream stream = c.convert(url).toInputStream();
 		Result r = c.convert(md);
+		
+		System.out.println(s);
 	}
 }

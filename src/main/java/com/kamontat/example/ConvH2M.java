@@ -1,11 +1,12 @@
 package com.example;
 
-import com.kamontat.Converter;
-import com.kamontat.Html2Md;
-import com.kamontat.Result;
+import com.kamontat.convert.Converter;
+import com.kamontat.convert.Html2Md;
+import com.kamontat.convert.Result;
+import com.kamontat.constance.Protocol;
+import com.kamontat.utilities.FilesUtil;
+import com.kamontat.utilities.URLManager;
 import com.overzealous.remark.Remark;
-import com.utilities.FilesUtil;
-import com.utilities.URLUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +25,9 @@ public class ConvH2M {
 	
 	public static void main(String[] args) throws IOException {
 		// file
-		File f = FilesUtil.getFile("src", "resource", "test_file.html");
+		File f = FilesUtil.getFileFromRoot("src", "resource", "test_file.html");
 		// url
-		URL url = URLUtil.getUrl(URLUtil.Protocol.HTTPS, "www.youtube.com").getUrl();
+		URL url = URLManager.getUrl(Protocol.HTTPS, "www.youtube.com").getUrl();
 		// string
 		String md = "<p><h1>Hello world</h1> <i>this<i> is my <b>name<b>. What <code>Code<code>?</p>";
 		

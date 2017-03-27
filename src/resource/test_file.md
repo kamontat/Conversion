@@ -2,6 +2,17 @@
 because this project every big now, all source code and git tree(git time line) was very big.
 so you can clone this git repository by `git clone --depth=<NUMBER> https://github.com/kamontat/CheckIDNumber.git` when `<NUMBER>` is commit that you want to clone (1-5 is enough)
 
+# History
+|Version    |Description|
+|:---------:|:----------|
+|**1.0**    | checking length and duplication of id-number |
+|**2.0**    | information of each id-number |
+|**2.1**    | loading screen when data is large |
+|**2.1.1**  | One-Click-Run |
+|**2.1.3**  | improve speed and enhancement |
+|**2.2.0**  | not longer maintain |
+|**3.0**    | increase id storage to 500k or more |
+
 # To download this program
 
 1. click on button call `releases` that in center between branch and contributor

@@ -1,7 +1,6 @@
-package com.utilities;
+package com.kamontat.utilities;
 
 import com.kamontat.convert.Converter;
-import com.kamontat.utilities.FilesUtil;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.exception;
+package com.kamontat.exception;
 
 import java.io.IOException;
 

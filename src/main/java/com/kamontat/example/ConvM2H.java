@@ -1,4 +1,4 @@
-package com.example;
+package com.kamontat.example;
 
 import com.kamontat.convert.Converter;
 import com.kamontat.convert.Result;

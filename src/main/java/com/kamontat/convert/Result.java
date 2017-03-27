@@ -1,4 +1,4 @@
-package com.kamontat;
+package com.kamontat.convert;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

@@ -49,7 +49,6 @@
                             <failOnError>false</failOnError>
                             <destDir>${project.build.directory}/docs</destDir>
                             <excludePackageNames>com.kamontat.example</excludePackageNames>
-                            <excludePackageNames>org</excludePackageNames>
                             <includeDependencySources>true</includeDependencySources>
                         </configuration>
                     </execution>

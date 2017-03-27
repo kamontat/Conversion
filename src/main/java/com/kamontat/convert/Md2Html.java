@@ -9,6 +9,8 @@ import com.kamontat.constance.RequestMethod;
 import com.kamontat.utilities.FilesUtil;
 import com.kamontat.utilities.RequestProp;
 import com.kamontat.utilities.URLManager;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +41,12 @@ public class Md2Html extends Converter {
 		RequestProp p2 = new RequestProp(Headers.Content_Length, String.valueOf(string.length())); // length of string
 		
 		InputStream s = URLManager.getUrl(Protocol.HTTPS, link).getSpecifyInputFromConnection(m, string, p1, p2);
+		try {
+			Document d = Jsoup.parse(s, FilesUtil.DEFAULT_ENCODING, "");
+			return new Result(d.toString(), s);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return Result.toResult(s);
 	}
 	

@@ -3,7 +3,7 @@ package com.kamontat.exception;
 import java.io.IOException;
 
 /**
- * To handle error that occurred when try to convert html and markdown
+ * To handle error that occurred when try to convert between html and markdown
  *
  * @author kamontat
  * @version 1.0

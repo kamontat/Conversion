@@ -10,7 +10,9 @@ import java.util.*;
 
 /**
  * html conversion by {@link org.jsoup.Jsoup} library <br>
- * All method is <b>static</b> method
+ * All method is <b>static</b> method and The output, can managing by {@link #newOutputSetting(Document.OutputSettings)} <br>
+ * <p>
+ * The easiest way to convert {@link Element}, {@link Elements} to {@link String} is {@link Element#toString() toString()} method
  *
  * @author kamontat
  * @version 1.0
@@ -26,7 +28,7 @@ public class HtmlUtil {
 	 * 		{@link Document.OutputSettings}
 	 * @see Document.OutputSettings
 	 */
-	public static void setSetting(Document.OutputSettings setting) {
+	public static void newOutputSetting(Document.OutputSettings setting) {
 		HtmlUtil.setting = setting;
 	}
 	
@@ -48,7 +50,7 @@ public class HtmlUtil {
 	 * @see HtmlUtil#removeTag(String)
 	 */
 	public static Elements getHtmlInTag(String html, String tag) {
-		return Jsoup.parse(html).child(0).getElementsByTag(tag);
+		return parse(html).child(0).getElementsByTag(tag);
 	}
 	
 	/**
@@ -57,17 +59,19 @@ public class HtmlUtil {
 	 *  input: <div>I am <code>Java</code> programmer</div>
 	 *  output: I am <code>Java</code> programmer
 	 * }</pre>
+	 * <b>The output, can managing by {@link #newOutputSetting(Document.OutputSettings)}</b>
 	 *
 	 * @param html
 	 * 		input html
 	 * @return string that removed top tag
 	 */
 	public static String removeTag(String html) {
-		return Jsoup.parse(html).child(0).html();
+		return parse(html).child(0).html();
 	}
 	
 	/**
-	 * remove top tag and return as string
+	 * remove top tag and return as string <br>
+	 * <b>The output, can managing by {@link #newOutputSetting(Document.OutputSettings)}</b>
 	 *
 	 * @param html
 	 * 		input Elements (easy get from {@link #getHtmlInTag(String, String)})
@@ -75,7 +79,7 @@ public class HtmlUtil {
 	 * @see #removeTag(String)
 	 */
 	public static String removeTag(Elements html) {
-		return html.html();
+		return parse(html.toString()).child(0).html();
 	}
 	
 	/**
@@ -91,6 +95,7 @@ public class HtmlUtil {
 	 *      </body>
 	 * </html>
 	 * }</pre>
+	 * <b>The output, can managing by {@link #newOutputSetting(Document.OutputSettings)}</b>
 	 *
 	 * @param html
 	 * 		input html
@@ -125,6 +130,26 @@ public class HtmlUtil {
 		return html.prependChild(body).prependChild(head);
 	}
 	
+	/**
+	 * cover {@code html} by {@code tagNames} by first element of tagName will be outermost. <br>
+	 * <pre>{@code
+	 *  input (html): hello world
+	 *  input (tags): [html, body, div]
+	 *
+	 *  output:
+	 *  <html>
+	 *      <body>
+	 *          <div>hello world</div>
+	 *      </body>
+	 *  </html>
+	 * }</pre>
+	 *
+	 * @param html
+	 * 		input html
+	 * @param tagNames
+	 * 		multiple tags name
+	 * @return element that covered by those tags
+	 */
 	public static Element coverTag(String html, String... tagNames) {
 		List<String> tags = Arrays.asList(tagNames);
 		Collections.reverse(tags);
@@ -136,25 +161,27 @@ public class HtmlUtil {
 		return e;
 	}
 	
-	public static Element coverTag(Element html, String... tagName) {
-		return coverTag(html.toString(), tagName);
-	}
-	
-	private static Element addTag(String s, String tagName) {
-		return parse(s).body().tagName(tagName);
-	}
-	
-	private static Element addTag(Element e, String tagName) {
-		return parse(e.toString()).body().tagName(tagName);
-	}
-	
+	/**
+	 * convert html String to {@link Document} (A lot more easier to manage it)
+	 *
+	 * @param html
+	 * 		input html
+	 * @return Document (include html body and head Tag)
+	 * @see Document
+	 * @see Document#head()
+	 * @see Document#body()
+	 */
 	public static Document parse(String html) {
 		Document document = Jsoup.parse(html);
 		if (setting != null) return document.outputSettings(setting);
 		return document;
 	}
 	
-	public static void main(String[] args) {
-		addTag("asdf", "html");
+	private static Element addTag(String fullHtml, String tagName) {
+		return parse(fullHtml).body().tagName(tagName);
+	}
+	
+	private static Element addTag(Element e, String tagName) {
+		return parse(e.toString()).body().tagName(tagName);
 	}
 }

@@ -9,6 +9,7 @@ import com.kamontat.constance.RequestMethod;
 import com.kamontat.utilities.FilesUtil;
 import com.kamontat.utilities.RequestProp;
 import com.kamontat.utilities.URLManager;
+import com.kamontat.utilities.HtmlUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -32,6 +33,18 @@ public class Md2Html extends Converter {
 	Md2Html() {
 	}
 	
+	/**
+	 * This will convert markdown syntax to html syntax. <br>
+	 * {@inheritDoc}
+	 *
+	 * @param string
+	 * 		{@inheritDoc}
+	 * @return {@inheritDoc}
+	 * @throws ConversionException
+	 * 		{@inheritDoc}
+	 * @implNote This method will convert to fully html string (include <b>html</b>, <b>body</b> and <b>head</b> tag), your can remove them by {@link HtmlUtil} (the html utilites by {@link Jsoup})
+	 * @see HtmlUtil
+	 */
 	@Override
 	public Result convert(String string) throws ConversionException {
 		String link = GITHUB_API + MARKDOWN_CONVERTER_API;
@@ -50,6 +63,16 @@ public class Md2Html extends Converter {
 		return Result.toResult(s);
 	}
 	
+	/**
+	 * convert file to string and using {@link #convert(String)}
+	 *
+	 * @param file
+	 * 		{@inheritDoc}
+	 * @return {@inheritDoc}
+	 * @throws ConversionException
+	 * 		{@inheritDoc}
+	 * @see HtmlUtil
+	 */
 	@Override
 	public Result convert(File file) throws ConversionException {
 		if (file == null) throw new ConversionException("File not found");
@@ -58,6 +81,15 @@ public class Md2Html extends Converter {
 		else throw new ConversionException("File extension unacceptable");
 	}
 	
+	/**
+	 * convert url to string and using {@link #convert(String)}
+	 *
+	 * @param url
+	 * 		{@inheritDoc}
+	 * @return {@inheritDoc}
+	 * @throws ConversionException {@inheritDoc}
+	 * @see HtmlUtil
+	 */
 	@Override
 	public Result convert(URL url) throws ConversionException {
 		if (url == null) throw new ConversionException("URL link not found");

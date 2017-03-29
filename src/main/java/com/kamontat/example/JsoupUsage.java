@@ -43,7 +43,10 @@ public class JsoupUsage {
 		System.out.println(eFullPlain);
 		/*
 		  <html>
-		   &lt;p&gt;Error &lt;code&gt;Exception...&lt;/code&gt; will appear when you &lt;strong&gt;don'Tag&lt;/strong&gt; install &lt;em&gt;JRE&lt;/em&gt;&lt;/p&gt;
+		   <head></head>
+		   <body>
+		    &lt;p&gt;Error &lt;code&gt;Exception...&lt;/code&gt; will appear when you &lt;strong&gt;don'Tag&lt;/strong&gt; install &lt;em&gt;JRE&lt;/em&gt;&lt;/p&gt;
+		   </body>
 		  </html>
 		 */
 		

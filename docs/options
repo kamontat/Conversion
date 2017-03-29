@@ -1,0 +1,24 @@
+-classpath
+'/Users/kamontat/.m2/repository/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar:/Users/kamontat/.m2/repository/com/kamontat/Utilities/1.2.0/Utilities-1.2.0.jar:/Users/kamontat/.m2/repository/com/overzealous/remark/1.1.0/remark-1.1.0.jar:/Users/kamontat/.m2/repository/com/kamontat/LinkManagement/1.0.0/LinkManagement-1.0.0.jar:/Users/kamontat/.m2/repository/org/jsoup/jsoup/1.10.2/jsoup-1.10.2.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/Users/kamontat/Desktop/Conversion/src/main/java:/Users/kamontat/Desktop/Conversion/target/distro-javadoc-sources/jsoup-1.10.2-sources:/Users/kamontat/Desktop/Conversion/target/distro-javadoc-sources/remark-1.1.0-sources:/Users/kamontat/Desktop/Conversion/target/distro-javadoc-sources/Utilities-1.2.0-sources:/Users/kamontat/Desktop/Conversion/target/distro-javadoc-sources/LinkManagement-1.0.0-sources'
+-author
+-bottom
+'Copyright &#169; 2017. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/kamontat/Desktop/Conversion/target/docs'
+-docencoding
+'UTF-8'
+-doctitle
+'converter 1.1.0 API'
+-linkoffline
+'http://docs.oracle.com/javase/8/docs/api' '/Users/kamontat/Desktop/Conversion/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'converter 1.1.0 API'

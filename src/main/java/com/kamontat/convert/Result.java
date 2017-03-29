@@ -40,12 +40,30 @@ public class Result {
 	}
 	
 	/**
+	 * {@link Optional} class, To handle about {@code null} reference
+	 *
+	 * @return optional of string
+	 */
+	public Optional<String> toOptionalString() {
+		return Optional.ofNullable(resultString);
+	}
+	
+	/**
 	 * get input stream
 	 *
 	 * @return {@link InputStream}
 	 */
 	public InputStream toInputStream() {
 		return inputStream;
+	}
+	
+	/**
+	 * {@link Optional} class, To handle about {@code null} reference
+	 *
+	 * @return optional of inputStream
+	 */
+	public Optional<InputStream> toOptionalInputStream() {
+		return Optional.ofNullable(inputStream);
 	}
 	
 	/**

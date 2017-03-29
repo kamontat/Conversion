@@ -42,7 +42,7 @@ public class Md2Html extends Converter {
 	 * @return {@inheritDoc}
 	 * @throws ConversionException
 	 * 		{@inheritDoc}
-	 * @implNote This method will convert to fully html string (include <b>html</b>, <b>body</b> and <b>head</b> tag), your can remove them by {@link HtmlUtil} (the html utilites by {@link Jsoup})
+	 * @implNote This method will convert to fully html string (include <b>html</b>, <b>body</b> and <b>head</b> tag), your can remove them by {@link HtmlUtil} (the html utilities by {@link Jsoup})
 	 * @see HtmlUtil
 	 */
 	@Override
